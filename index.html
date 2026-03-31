@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Luxe Night</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans+JP:wght@200;300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ===== THEME VARS ===== */
+:root{
+  --gold:#c9a84c;--gold-l:#e8d08a;--gold-d:#8b6914;
+  --deep:#09060a;--s1:#120e14;--s2:#1c1620;--s3:#28202e;
+  --text:#f0e8f0;--muted:#8a7a90;--faint:#5a4f62;
+  --accent:#c04870;--ok:#4ab870;--warn:#e8a030;
+  --border:rgba(201,168,76,.18);--border2:rgba(201,168,76,.38);
+}
+body.th-rose {--gold:#e09aae;--gold-l:#f5c6d4;--gold-d:#b06080;--accent:#d05878;--border:rgba(224,154,174,.18);--border2:rgba(224,154,174,.38);}
+body.th-neo  {--gold:#5fd4ff;--gold-l:#a0e8ff;--gold-d:#2090cc;--accent:#ff60a0;--border:rgba(95,212,255,.18);--border2:rgba(95,212,255,.38);}
+body.th-gold {--gold:#e8c060;--gold-l:#f4d888;--gold-d:#a87c20;--deep:#06040a;--s1:#0e0c00;--s2:#180f00;--s3:#221800;--border:rgba(232,192,96,.2);}
+body.th-white{--deep:#f8f4f0;--s1:#f0ebe6;--s2:#e8e2dc;--s3:#ddd6ce;--text:#1a1016;--muted:#6a5a60;--faint:#a09090;--border:rgba(26,16,22,.15);}
+body.th-sakura{--gold:#ffb7c5;--gold-l:#ffd4de;--gold-d:#cc7080;--accent:#ff6e8a;--border:rgba(255,183,197,.2);}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--deep);color:var(--text);font-size:14px;line-height:1.7;}
+
+/* GNAV */
+#gnav{position:sticky;top:0;z-index:500;background:rgba(9,6,10,.97);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);}
+.gnav-in{display:flex;align-items:center;}
+.gnav-logo{padding:0 22px;border-right:1px solid var(--border);display:flex;align-items:center;height:52px;}
+.gnav-logo a{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;color:var(--gold);text-decoration:none;white-space:nowrap;font-size:clamp(18px,2vw,24px);}
+.gnav-links{display:flex;flex:1;overflow-x:auto;scrollbar-width:none;}
+.gnav-links::-webkit-scrollbar{display:none;}
+.gnav-links a{display:flex;align-items:center;height:52px;padding:0 16px;font-size:12px;color:var(--muted);text-decoration:none;border-right:1px solid var(--border);transition:all .2s;white-space:nowrap;letter-spacing:.04em;}
+.gnav-links a:hover{color:var(--gold);background:rgba(201,168,76,.04);}
+.gnav-links a.nb{position:relative;}
+.gnav-links a.nb::after{content:'NEW';font-family:'Space Mono',monospace;font-size:8px;background:var(--accent);color:#fff;padding:1px 4px;border-radius:2px;position:absolute;top:8px;right:6px;}
+.gnav-r{margin-left:auto;display:flex;border-left:1px solid var(--border);}
+.gnav-tel{padding:0 18px;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid var(--border);}
+.gnav-tel .tl{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.1em;display:block;}
+.gnav-tel .tn{font-family:'Space Mono',monospace;font-size:14px;color:var(--gold);display:block;}
+.gnav-rsv{display:flex;align-items:center;height:52px;padding:0 22px;background:var(--gold);color:var(--deep);font-size:12px;font-weight:500;text-decoration:none;letter-spacing:.08em;transition:all .2s;white-space:nowrap;}
+.gnav-rsv:hover{background:var(--gold-l);}
+
+/* SUB NAV */
+#snav{background:var(--s1);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
+#snav::-webkit-scrollbar{display:none;}
+.snav-in{display:flex;white-space:nowrap;padding:0 16px;}
+.sna{display:inline-flex;align-items:center;height:36px;padding:0 14px;font-size:12px;color:var(--muted);text-decoration:none;border-right:1px solid var(--border);transition:color .2s;letter-spacing:.04em;}
+.sna:first-child{border-left:1px solid var(--border);}
+.sna:hover{color:var(--gold);}
+
+/* HERO */
+#hero{position:relative;overflow:hidden;background:var(--s1);}
+.hslide{display:none;position:relative;}
+.hslide.on{display:block;}
+.himg-wrap{width:100%;min-height:500px;background:var(--s2);position:relative;display:flex;align-items:center;overflow:hidden;}
+.himg-wrap img.hbg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.hph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(201,168,76,.02) 40px,rgba(201,168,76,.02) 41px);}
+.hph .hl{font-family:'Space Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.2em;}
+.hover-ov{position:absolute;inset:0;background:linear-gradient(to right,rgba(9,6,10,.72) 0%,rgba(9,6,10,.3) 50%,transparent 100%);}
+.htxt{position:absolute;left:clamp(24px,4vw,60px);top:50%;transform:translateY(-50%);z-index:2;}
+.hcatch{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.28em;color:var(--gold);margin-bottom:12px;}
+.htitle{font-family:'Cormorant Garamond',serif;font-weight:300;font-style:italic;font-size:clamp(40px,5.5vw,76px);color:var(--text);line-height:1.08;margin-bottom:14px;}
+.hsub{font-size:13px;color:var(--muted);line-height:2;max-width:420px;margin-bottom:26px;font-weight:300;}
+.hbtns{display:flex;gap:10px;flex-wrap:wrap;}
+.hbtn{padding:11px 30px;font-size:12px;letter-spacing:.1em;text-decoration:none;font-weight:400;transition:all .2s;display:inline-block;}
+.hbtn.p{background:var(--gold);color:var(--deep);}
+.hbtn.p:hover{background:var(--gold-l);}
+.hbtn.o{border:1px solid rgba(240,232,240,.25);color:var(--muted);}
+.hbtn.o:hover{border-color:var(--muted);color:var(--text);}
+.hctrl{position:absolute;top:50%;transform:translateY(-50%);width:100%;display:flex;justify-content:space-between;padding:0 16px;z-index:3;pointer-events:none;}
+.harr{width:42px;height:42px;border:1px solid rgba(201,168,76,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;pointer-events:all;background:rgba(9,6,10,.5);color:var(--gold);font-size:16px;transition:all .2s;}
+.harr:hover{background:rgba(201,168,76,.15);border-color:var(--gold);}
+.hdots{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:3;}
+.hdot{width:22px;height:3px;background:rgba(201,168,76,.25);cursor:pointer;transition:all .3s;}
+.hdot.on{background:var(--gold);width:38px;}
+
+/* INFO BAR */
+.ibar{background:var(--s1);border-bottom:1px solid var(--border);padding:9px 36px;display:flex;align-items:center;gap:28px;overflow-x:auto;flex-wrap:wrap;}
+.ib{display:flex;align-items:center;gap:7px;white-space:nowrap;}
+.ib-lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--gold);background:rgba(201,168,76,.1);padding:2px 7px;border:1px solid var(--border);}
+.ib-val{font-size:12px;color:var(--muted);}
+
+/* SECTION */
+.sec{padding:56px clamp(18px,4vw,40px);}
+.sec-alt{background:var(--s1);}
+.sch{display:flex;align-items:baseline;gap:14px;margin-bottom:28px;padding-bottom:13px;border-bottom:1px solid var(--border);}
+.sch-ja{font-size:17px;font-weight:400;color:var(--text);letter-spacing:.08em;}
+.sch-en{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.3em;color:var(--gold);}
+.sch-more{margin-left:auto;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:3px 11px;transition:all .2s;}
+.sch-more:hover{color:var(--gold);border-color:var(--gold);}
+
+/* NEWS */
+.news-list{display:flex;flex-direction:column;}
+.ni{display:flex;align-items:baseline;gap:14px;padding:12px 0;border-bottom:1px solid rgba(201,168,76,.06);text-decoration:none;transition:all .2s;}
+.ni:hover .ni-title{color:var(--gold);}
+.ni-date{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;}
+.ni-cat{font-family:'Space Mono',monospace;font-size:9px;padding:2px 7px;border:1px solid;border-radius:2px;white-space:nowrap;}
+.ni-title{font-size:13px;color:var(--muted);transition:color .2s;}
+
+/* GIRLS SCROLL */
+.girls-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.gc{flex-shrink:0;width:190px;cursor:pointer;transition:all .2s;}
+.gc:hover .gphoto{border-color:var(--gold);}
+.gphoto{aspect-ratio:2/3;background:var(--s2);border:1px solid var(--border);overflow:hidden;position:relative;transition:border-color .3s;}
+.gphoto img{width:100%;height:100%;object-fit:cover;display:block;}
+.gph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,var(--s2),var(--s3));}
+.gph span{font-family:'Space Mono',monospace;font-size:10px;color:var(--faint);}
+.gbadge{position:absolute;top:7px;left:7px;font-family:'Space Mono',monospace;font-size:9px;padding:2px 6px;}
+.bn{background:var(--accent);color:#fff;}
+.br{background:rgba(201,168,76,.88);color:var(--deep);}
+.gmeta{padding:9px 3px;}
+.gname{font-size:14px;color:var(--text);font-weight:400;letter-spacing:.08em;margin-bottom:2px;}
+.gage{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
+.gtags{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;}
+.gtag{font-size:10px;color:var(--muted);border:1px solid var(--border);padding:1px 5px;}
+.gmsg{font-size:11px;color:var(--muted);font-style:italic;margin-top:4px;border-left:2px solid var(--border2);padding-left:6px;line-height:1.5;}
+.gsns{display:flex;gap:5px;margin-top:5px;}
+.gsns a,.gsns span{width:24px;height:24px;border:1px solid var(--border);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;text-decoration:none;color:var(--muted);transition:all .2s;}
+.gsns a:hover{border-color:var(--gold);color:var(--gold);}
+.gst{font-family:'Space Mono',monospace;font-size:10px;margin-top:5px;}
+.s-in{color:var(--ok);}
+.s-soon{color:var(--warn);}
+.s-out{color:var(--faint);}
+
+/* CAST GRID */
+.cast-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;}
+.cast-filters{display:flex;gap:7px;margin-bottom:18px;flex-wrap:wrap;}
+.cfilter{font-family:'Space Mono',monospace;font-size:10px;padding:4px 12px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;border-radius:2px;transition:all .2s;}
+.cfilter.on,.cfilter:hover{background:var(--gold);color:var(--deep);border-color:var(--gold);}
+
+/* SCHEDULE */
+.stbl-wrap{overflow-x:auto;}
+.stbl{width:100%;border-collapse:collapse;min-width:560px;}
+.stbl th{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--gold);padding:9px 13px;text-align:left;border-bottom:1px solid var(--border);background:var(--s2);}
+.stbl td{padding:13px;border-bottom:1px solid rgba(201,168,76,.05);vertical-align:middle;}
+.stbl tr:hover td{background:rgba(201,168,76,.025);}
+.sn{font-size:14px;color:var(--text);letter-spacing:.07em;}
+.sp{font-size:12px;color:var(--muted);}
+.stime{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);}
+.sbadge{display:inline-block;font-family:'Space Mono',monospace;font-size:10px;padding:2px 8px;border-radius:2px;}
+.sb-in  {background:rgba(74,184,112,.12);color:var(--ok);border:1px solid rgba(74,184,112,.3);}
+.sb-soon{background:rgba(232,160,48,.1);color:var(--warn);border:1px solid rgba(232,160,48,.25);}
+.sb-off {background:var(--s2);color:var(--faint);border:1px solid var(--border);}
+
+/* PRICE */
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;}
+.pcard{background:var(--s1);border:1px solid var(--border);padding:26px;}
+.pplan{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.28em;color:var(--gold);margin-bottom:7px;}
+.pname{font-size:17px;font-weight:400;color:var(--text);margin-bottom:14px;}
+.pmain{font-family:'Space Mono',monospace;font-size:24px;color:var(--gold);margin-bottom:3px;}
+.pmain small{font-size:12px;color:var(--muted);}
+.pnote{font-size:11px;color:var(--muted);margin-bottom:18px;line-height:1.8;}
+.plist{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.plist li{font-size:12px;color:var(--muted);padding-left:14px;position:relative;}
+.plist li::before{content:'—';position:absolute;left:0;color:var(--gold-d);}
+.ptbl{width:100%;border-collapse:collapse;margin-top:18px;}
+.ptbl th,.ptbl td{padding:9px 13px;text-align:left;border:1px solid rgba(201,168,76,.09);font-size:12px;}
+.ptbl th{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--gold);background:var(--s2);}
+.ptbl td{color:var(--muted);}
+
+/* AREA GRID（エリア料金カード表示） */
+.area-grid-new{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;}
+.area-card{background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:12px 14px;transition:all .2s;}
+.area-card:hover{border-color:var(--gold);}
+.area-card-name{font-size:13px;color:var(--text);font-weight:400;margin-bottom:4px;}
+.area-card-fee{font-family:'Space Mono',monospace;font-size:11px;}
+.fee-free{color:var(--ok);}
+.fee-paid{color:var(--gold);}
+.area-card-note{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.5;}
+/* 追加情報ボックス */
+.price-info-box{background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:14px 16px;}
+.pib-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--gold);margin-bottom:5px;}
+.pib-value{font-size:13px;color:var(--text);}
+
+/* AREA */
+.area-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;}
+.area-item{background:var(--s2);border:1px solid var(--border);padding:9px 12px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;transition:all .2s;cursor:pointer;}
+.area-item:hover{border-color:var(--gold);color:var(--gold);}
+.area-item::before{content:'→';color:var(--gold-d);font-size:10px;}
+
+/* ACCESS */
+.acc-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start;}
+@media(max-width:700px){.acc-grid{grid-template-columns:1fr;}}
+.acc-map{background:var(--s2);border:1px solid var(--border);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.maplines{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(201,168,76,.04) 39px,rgba(201,168,76,.04) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(201,168,76,.04) 39px,rgba(201,168,76,.04) 40px);}
+.mappin{position:relative;z-index:1;text-align:center;}
+.mapd{width:11px;height:11px;border-radius:50%;background:var(--gold);margin:0 auto 5px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 8px rgba(201,168,76,.4)}50%{box-shadow:0 0 22px rgba(201,168,76,.7)}}
+.mapl{font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:.15em;}
+.acc-dl dt{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--gold);margin-top:18px;margin-bottom:5px;}
+.acc-dl dd{font-size:13px;color:var(--muted);line-height:1.9;}
+
+/* RECRUIT */
+.rec-banner{background:linear-gradient(135deg,var(--s2),var(--s3));border:1px solid var(--border);padding:38px;display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;}
+.rec-text h3{font-size:19px;font-weight:400;color:var(--text);margin-bottom:7px;letter-spacing:.1em;}
+.rec-text p{font-size:13px;color:var(--muted);line-height:1.9;max-width:480px;}
+.rec-btn{background:var(--accent);color:#fff;padding:13px 34px;font-size:13px;letter-spacing:.1em;text-decoration:none;white-space:nowrap;transition:all .2s;display:inline-block;}
+.rec-btn:hover{opacity:.85;}
+
+/* FOOTER */
+footer{background:var(--s1);border-top:1px solid var(--border);padding:38px clamp(18px,4vw,40px);}
+.ft{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--border);}
+@media(max-width:700px){.ft{grid-template-columns:1fr 1fr;}}
+.fb .flogo{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:22px;color:var(--gold);display:block;margin-bottom:10px;text-decoration:none;}
+.fb p{font-size:12px;color:var(--muted);line-height:1.9;}
+.fcol h4{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--gold);margin-bottom:12px;}
+.fcol ul{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.fcol a{font-size:12px;color:var(--muted);text-decoration:none;transition:color .2s;}
+.fcol a:hover{color:var(--gold);}
+.fb2{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.flegal{display:flex;gap:18px;flex-wrap:wrap;}
+.flegal a{font-size:11px;color:var(--faint);text-decoration:none;}
+.fcopy{font-family:'Space Mono',monospace;font-size:10px;color:var(--faint);}
+
+/* admin badge は非表示（セキュリティのため公開HPには表示しない） */
+</style>
+</head>
+<body>
+
+<!-- GNAV -->
+<nav id="gnav">
+  <div class="gnav-in">
+    <div class="gnav-logo"><a href="#" id="site-logo">Luxe Night</a></div>
+    <div class="gnav-links">
+      <a href="#new" class="nb">新人紹介</a>
+      <a href="#cast">在籍一覧</a>
+      <a href="#sched">出勤情報</a>
+      <a href="#price">料金案内</a>
+      <a href="#area">対応エリア</a>
+      <a href="#access">アクセス</a>
+      <a href="#recruit">求人</a>
+    </div>
+    <div class="gnav-r">
+      <div class="gnav-tel">
+        <span class="tl">お電話でのご予約</span>
+        <span class="tn" id="d-tel">—</span>
+      </div>
+      <a href="#" class="gnav-rsv" id="d-rsvbtn">今すぐ予約</a>
+    </div>
+  </div>
+</nav>
+
+<!-- SUB NAV -->
+<div id="snav">
+  <div class="snav-in">
+    <a class="sna" href="#new">🌟 本日の新人</a>
+    <a class="sna" href="#sched">📅 出勤スケジュール</a>
+    <a class="sna" href="#cast">👑 ランキング</a>
+    <a class="sna" href="#price">💰 料金システム</a>
+    <a class="sna" href="#recruit">🎉 求人情報</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div id="hero-slides"></div>
+  <div class="hctrl"><div class="harr" onclick="prevSlide()">‹</div><div class="harr" onclick="nextSlide()">›</div></div>
+  <div class="hdots" id="hero-dots"></div>
+</section>
+
+<!-- INFO BAR -->
+<div class="ibar">
+  <div class="ib"><span class="ib-lbl">OPEN</span><span class="ib-val" id="d-hours">—</span></div>
+  <div class="ib"><span class="ib-lbl">AREA</span><span class="ib-val" id="d-area-short">—</span></div>
+  <div class="ib"><span class="ib-lbl">CAST</span><span class="ib-val">在籍 <span id="d-total">0</span>名 / 本日出勤 <span id="d-today" style="color:var(--gold);font-weight:500;">0名</span></span></div>
+  <div class="ib"><span class="ib-lbl">TEL</span><span class="ib-val" id="d-tel2" style="color:var(--gold);">—</span></div>
+</div>
+
+<!-- NEWS -->
+<section class="sec sec-alt">
+  <div class="sch"><span class="sch-ja">お知らせ</span><span class="sch-en">NEWS</span><a href="#" class="sch-more">一覧を見る →</a></div>
+  <div class="news-list" id="d-news"></div>
+</section>
+
+<!-- NEW GIRLS -->
+<section class="sec" id="new">
+  <div class="sch"><span class="sch-ja">新人紹介</span><span class="sch-en">NEW FACE</span><a href="#" class="sch-more">全員を見る →</a></div>
+  <div class="girls-scroll" id="d-new-girls"></div>
+</section>
+
+<!-- CAST LIST -->
+<section class="sec sec-alt" id="cast">
+  <div class="sch"><span class="sch-ja">在籍一覧</span><span class="sch-en">CAST</span><a href="#" class="sch-more">全員を見る →</a></div>
+  <div class="cast-filters" id="cast-filters">
+    <button class="cfilter on" onclick="filterCast(this,'all')">すべて</button>
+    <button class="cfilter" onclick="filterCast(this,'in')">出勤中</button>
+    <button class="cfilter" onclick="filterCast(this,'soon')">本日出勤</button>
+    <button class="cfilter" onclick="filterCast(this,'new')">NEW</button>
+    <button class="cfilter" onclick="filterCast(this,'rank')">ランキング</button>
+  </div>
+  <div class="cast-grid" id="d-cast-grid"></div>
+</section>
+
+<!-- SCHEDULE -->
+<section class="sec" id="sched">
+  <div class="sch"><span class="sch-ja">本日の出勤スケジュール</span><span class="sch-en">TODAY'S SCHEDULE</span></div>
+  <div class="stbl-wrap"><table class="stbl">
+    <thead><tr><th>CAST</th><th>スペック</th><th>出勤時間</th><th>STATUS</th><th>指名</th></tr></thead>
+    <tbody id="d-sched"></tbody>
+  </table></div>
+</section>
+
+<!-- PRICE -->
+<section class="sec sec-alt" id="price">
+  <div class="sch"><span class="sch-ja">料金案内</span><span class="sch-en">PRICE</span></div>
+
+  <!-- プランカード -->
+  <div class="price-grid" id="d-price-cards"></div>
+
+  <!-- 料金表 -->
+  <table class="ptbl" style="margin-top:22px;">
+    <thead><tr><th>コース</th><th>時間</th><th>料金</th><th>備考</th></tr></thead>
+    <tbody id="d-price-tbl"></tbody>
+  </table>
+
+  <!-- 追加情報 -->
+  <div id="d-price-extra" style="margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;"></div>
+
+  <!-- オプション料金 -->
+  <div id="d-options-wrap" style="margin-top:32px;display:none;">
+    <div class="sch" style="margin-bottom:0;padding-bottom:12px;border-bottom:1px solid var(--border);">
+      <span class="sch-ja" style="font-size:15px;">オプション料金</span>
+      <span class="sch-en">OPTIONS</span>
+    </div>
+    <table class="ptbl" style="margin-top:0;">
+      <thead><tr><th>オプション</th><th>料金</th><th>備考</th></tr></thead>
+      <tbody id="d-options-tbl"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- AREA -->
+<section class="sec" id="area">
+  <div class="sch"><span class="sch-ja">対応エリア</span><span class="sch-en">SERVICE AREA</span></div>
+  <div id="d-areas"></div>
+</section>
+
+<!-- ACCESS -->
+<section class="sec sec-alt" id="access">
+  <div class="sch"><span class="sch-ja">アクセス・連絡先</span><span class="sch-en">ACCESS</span></div>
+  <div class="acc-grid">
+    <div class="acc-map"><div class="maplines"></div><div class="mappin"><div class="mapd"></div><div class="mapl" id="d-mapname">LUXE NIGHT</div></div></div>
+    <dl class="acc-dl">
+      <dt>OFFICE</dt><dd id="d-addr">—</dd>
+      <dt>TEL</dt><dd id="d-tel3">—</dd>
+      <dt>STATION</dt><dd id="d-station">—</dd>
+      <dt>LINE</dt><dd id="d-line">—</dd>
+      <dt>OPEN</dt><dd id="d-open">—</dd>
+    </dl>
+  </div>
+</section>
+
+<!-- RECRUIT -->
+<section class="sec" id="recruit">
+  <div class="sch"><span class="sch-ja">求人情報</span><span class="sch-en">RECRUIT</span></div>
+  <div class="rec-banner">
+    <div class="rec-text"><h3>女性スタッフ募集中</h3><p>未経験者大歓迎。あなたのペースで始められます。日払い・週払い対応。充実したサポート体制で安心してスタートできます。</p></div>
+    <a href="#" class="rec-btn">求人詳細を見る</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft">
+    <div class="fb">
+      <a href="#" class="flogo" id="d-footer-logo">Luxe Night</a>
+      <p id="d-fdesc">東京No.1デリバリーサービス。</p>
+    </div>
+    <div class="fcol"><h4>MENU</h4><ul><li><a href="#new">新人紹介</a></li><li><a href="#cast">在籍一覧</a></li><li><a href="#sched">出勤スケジュール</a></li><li><a href="#price">料金案内</a></li></ul></div>
+    <div class="fcol"><h4>INFO</h4><ul><li><a href="#area">対応エリア</a></li><li><a href="#access">アクセス</a></li><li><a href="#">よくある質問</a></li><li><a href="#">お問い合わせ</a></li></ul></div>
+    <div class="fcol"><h4>RECRUIT</h4><ul><li><a href="#recruit">求人情報</a></li><li><a href="#">LINE応募</a></li></ul></div>
+  </div>
+  <div class="fb2">
+    <div class="flegal"><a href="#">プライバシーポリシー</a><a href="#">特定商取引法</a><a href="#">免責事項</a></div>
+    <div class="fcopy" id="d-copy">© 2024 LUXE NIGHT.</div>
+  </div>
+</footer>
+
+<!-- 管理画面リンクは公開HPには表示しない -->
+
+<script>
+// ============================================================
+//  DEMO DATA（スタンドアロン版 — LocalStorage不使用）
+// ============================================================
+let S = {
+  theme:'noir',
+  sitename:'Luxe Night',
+  htitle:'Luxe Night',
+  catch:'PREMIUM DELIVERY CLUB — TOKYO',
+  hsub:'東京最高峰のデリバリーサービス。\n厳選された美女たちがあなたの元へ。\n非日常の時間をご用意いたします。',
+  tel:'03-XXXX-XXXX',
+  line:'@luxenight_ginza',
+  open:'12:00', close:'翌5:00',
+  addr:'東京都新宿区○○1-2-3 ○○ビル3F',
+  station:'JR「新宿」駅 東口より徒歩5分\n東京メトロ「新宿三丁目」駅 C7出口すぐ',
+  rsvtxt:'今すぐ予約', ctabtn:'今すぐ予約する',
+  copy:'© 2025 LUXE NIGHT. ALL RIGHTS RESERVED.',
+  fdesc:'東京No.1デリバリーサービス。厳選キャストが\nあなたの元へお伺いいたします。',
+  ig:'@luxenight_ginza', tw:'@luxenight',
+  shimei:'¥2,000〜', ench:'¥8,000 / 30分',
+  nyukai:'¥3,000（初回のみ）', kotsu:'実費（エリアによる）', priceNote:'お支払いは現金のみ',
+  options:[
+    {id:1, name:'コスプレ',      price:'¥3,000', note:'衣装持込'},
+    {id:2, name:'ローション',    price:'¥2,000', note:''},
+    {id:3, name:'3P（追加1名）', price:'¥10,000',note:'要相談'},
+  ],
+  areas:[
+    {name:'新宿区',   fee:'¥0',    note:'交通費込'},
+    {name:'渋谷区',   fee:'¥0',    note:'交通費込'},
+    {name:'港区',     fee:'¥0',    note:'交通費込'},
+    {name:'中央区',   fee:'¥0',    note:'交通費込'},
+    {name:'千代田区', fee:'¥0',    note:'交通費込'},
+    {name:'品川区',   fee:'¥500',  note:''},
+    {name:'目黒区',   fee:'¥500',  note:''},
+    {name:'豊島区',   fee:'¥500',  note:''},
+    {name:'横浜市',   fee:'¥1,500',note:'一部エリア対応不可'},
+    {name:'川崎市',   fee:'¥1,000',note:''},
+  ],
+  cast:[
+    {id:1,name:'明日香',roma:'Asuka',age:25,height:'T165',blood:'A',tags:['スレンダー','No.1'],rank:'★1',status:'in',time:'19:00 — Last',photo:'',twitter:'',instagram:'',message:'一緒に素敵な時間を過ごしましょう♪'},
+    {id:2,name:'凛',roma:'Rin',age:22,height:'T158',blood:'O',tags:['清楚系','天然'],rank:'NEW',status:'in',time:'17:00 — 01:00',photo:'',twitter:'',instagram:'',message:''},
+    {id:3,name:'遥',roma:'Haruka',age:23,height:'T162',blood:'B',tags:['癒し系','グラマー'],rank:'★2',status:'soon',time:'22:00 — Last',photo:'',twitter:'',instagram:'',message:''},
+    {id:4,name:'雪',roma:'Yuki',age:20,height:'T163',blood:'AB',tags:['天然','色白'],rank:'NEW',status:'soon',time:'20:00 — 03:00',photo:'',twitter:'',instagram:'',message:''},
+    {id:5,name:'さくら',roma:'Sakura',age:24,height:'T160',blood:'O',tags:['モデル系','グラマー'],rank:'★3',status:'in',time:'20:00 — Last',photo:'',twitter:'',instagram:'',message:''},
+  ],
+  news:[
+    {id:1,date:'2025.03.31',cat:'new',title:'新人キャスト「凛」「雪」が本日デビュー！'},
+    {id:2,date:'2025.03.28',cat:'event',title:'春の特別イベント開催決定！特別サービス多数'},
+    {id:3,date:'2025.03.20',cat:'info',title:'営業時間のお知らせ — 春季スペシャル営業中'},
+  ],
+  prices:[
+    {name:'レギュラー', time:'60分',  price:'¥20,000', note:'入会金・交通費込'},
+    {name:'ロング',     time:'90分',  price:'¥27,000', note:'入会金・交通費込'},
+    {name:'プレミアム', time:'120分', price:'¥36,000', note:'入会金・交通費込'},
+    {name:'延長',       time:'30分',  price:'¥8,000',  note:'現地にてご相談'},
+  ],
+  heroImages:[{name:'HERO',url:''}],
+};
+
+let curSlide = 0;
+let slideCount = 0;
+
+function load() { /* スタンドアロン版はLocalStorage不使用 */ }
+
+// ============================================================
+//  RENDER ALL
+// ============================================================
+function renderAll() {
+  applyTheme();
+  renderMeta();
+  renderHero();
+  renderNews();
+  renderGirls();
+  renderCastGrid();
+  renderSchedule();
+  renderPrice();
+  renderAreas();
+  renderAccess();
+  renderFooter();
+}
+
+function applyTheme() {
+  document.body.className = S.theme && S.theme!=='noir' ? 'th-'+S.theme : '';
+}
+
+function renderMeta() {
+  const t = id => document.getElementById(id);
+  document.title = (S.sitename||'Luxe Night') + ' — 公式サイト';
+  setText('site-logo',   S.sitename);
+  setText('d-footer-logo', S.sitename);
+  setText('d-mapname',   (S.sitename||'LUXE NIGHT').toUpperCase());
+  setText('d-tel',       S.tel);
+  setText('d-tel2',      S.tel);
+  setText('d-tel3',      S.tel);
+  setText('d-hours',     (S.open||'—') + ' 〜 ' + (S.close||'—') + '（年中無休）');
+  setText('d-open',      (S.open||'—') + ' 〜 ' + (S.close||'—') + '（年中無休）');
+  setText('d-addr',      S.addr);
+  setHTML('d-station',   (S.station||'').replace(/\n/g,'<br>'));
+  setText('d-line',      S.line);
+  setText('d-copy',      S.copy);
+  setHTML('d-fdesc',     (S.fdesc||'').replace(/\n/g,'<br>'));
+  const rb = document.getElementById('d-rsvbtn');
+  if (rb) rb.textContent = S.rsvtxt||'今すぐ予約';
+  // Area short（オブジェクト形式・文字列形式の両方に対応）
+  const areas = (S.areas||[]).map(a=>typeof a==='string'?a:a.name);
+  setText('d-area-short', areas.slice(0,3).join('・') + (areas.length>3?'など':''));
+  // Total
+  setText('d-total', (S.cast||[]).length);
+  setText('d-today', (S.cast||[]).filter(c=>c.status!=='out').length+'名');
+}
+
+function setText(id, v) { const e=document.getElementById(id); if(e) e.textContent=v||'—'; }
+function setHTML(id, v) { const e=document.getElementById(id); if(e) e.innerHTML=v||''; }
+
+// HERO
+function renderHero() {
+  const slides = document.getElementById('hero-slides');
+  const dots   = document.getElementById('hero-dots');
+  const images = S.heroImages?.length ? S.heroImages : [{name:'HERO',url:''}];
+  slideCount = images.length;
+  curSlide = 0;
+
+  slides.innerHTML = images.map((img, i) => `
+    <div class="hslide ${i===0?'on':''}" id="hs-${i}">
+      <div class="himg-wrap" style="min-height:500px;">
+        ${img.url ? `<img class="hbg" src="${img.url}" onerror="this.style.display='none'">` : ''}
+        <div class="hph"><div class="hl">${S.sitename?.toUpperCase()||'LUXE NIGHT'}</div></div>
+      </div>
+      <div class="hover-ov"></div>
+      ${i===0 ? `<div class="htxt">
+        <div class="hcatch" id="d-catch">${S.catch||''}</div>
+        <h1 class="htitle" id="d-htitle">${(S.htitle||'Luxe Night').replace(/\n/g,'<br>')}</h1>
+        <p class="hsub" id="d-hsub">${(S.hsub||'').replace(/\n/g,'<br>')}</p>
+        <div class="hbtns">
+          <a href="#" class="hbtn p">${S.ctabtn||'今すぐ予約する'}</a>
+          <a href="#cast" class="hbtn o">在籍を見る</a>
+        </div>
+      </div>` : ''}
+    </div>`).join('');
+
+  dots.innerHTML = images.map((_,i) => `<div class="hdot ${i===0?'on':''}" onclick="goSlide(${i})"></div>`).join('');
+}
+function goSlide(i) {
+  curSlide = ((i%slideCount)+slideCount)%slideCount;
+  document.querySelectorAll('.hslide').forEach((s,idx)=>s.classList.toggle('on',idx===curSlide));
+  document.querySelectorAll('.hdot').forEach((d,idx)=>d.classList.toggle('on',idx===curSlide));
+}
+function nextSlide(){ goSlide(curSlide+1); }
+function prevSlide(){ goSlide(curSlide-1); }
+setInterval(nextSlide, 5000);
+
+// NEWS
+function renderNews() {
+  const el = document.getElementById('d-news');
+  const catMap={info:'nc-info',new:'nc-new',event:'nc-event'};
+  const clsMap={info:'cat-info',new:'cat-new',event:'cat-event'};
+  if (!S.news?.length) { el.innerHTML='<div style="color:var(--faint);font-size:12px;">お知らせはありません</div>'; return; }
+  el.innerHTML = S.news.map(n=>`<a class="ni" href="#">
+    <span class="ni-date">${n.date}</span>
+    <span class="ni-cat" style="border-color:${n.cat==='new'?'rgba(192,72,112,.4)':n.cat==='event'?'rgba(124,74,142,.4)':'rgba(201,168,76,.4)'};color:${n.cat==='new'?'var(--accent)':n.cat==='event'?'#b090d8':'var(--gold)'};">${n.cat.toUpperCase()}</span>
+    <span class="ni-title">${n.title}</span>
+  </a>`).join('');
+}
+
+// GIRL CARD
+function gCard(c) {
+  const badge = c.rank ? `<span class="gbadge ${c.rank==='NEW'?'bn':'br'}">${c.rank}</span>` : '';
+  const photo = c.photo ? `<img src="${c.photo}" onerror="this.style.display='none'">` : `<div class="gph"><span>PHOTO</span></div>`;
+  const st    = c.status==='in'?'s-in':c.status==='soon'?'s-soon':'s-out';
+  const stxt  = c.status==='in'?'● 出勤中':c.status==='soon'?'◉ 出勤予定':'○ 本日休み';
+  const sns = [];
+  if (c.twitter)   sns.push(`<a href="https://x.com/${c.twitter}" target="_blank" title="Twitter/X">𝕏</a>`);
+  if (c.instagram) sns.push(`<a href="https://instagram.com/${c.instagram}" target="_blank" title="Instagram">📸</a>`);
+  const msg = c.message ? `<div class="gmsg">${c.message}</div>` : '';
+  const snsRow = sns.length ? `<div class="gsns">${sns.join('')}</div>` : '';
+  return `<div class="gc">
+    <div class="gphoto">${photo}${badge}</div>
+    <div class="gmeta">
+      <div class="gname">${c.name} / ${c.roma}</div>
+      <div class="gage">${c.age}歳 · ${c.height}${c.blood?' · '+c.blood+'型':''}</div>
+      <div class="gtags">${(c.tags||[]).map(t=>`<span class="gtag">${t}</span>`).join('')}</div>
+      ${msg}${snsRow}
+      <div class="gst ${st}">${stxt}</div>
+    </div>
+  </div>`;
+}
+
+// NEW GIRLS
+function renderGirls() {
+  const el = document.getElementById('d-new-girls');
+  const newCast = (S.cast||[]).filter(c=>c.rank==='NEW'||c.status!=='out');
+  el.innerHTML = (newCast.length?newCast:S.cast||[]).slice(0,8).map(c=>gCard(c)).join('');
+}
+
+// CAST GRID
+function filterCast(btn, type) {
+  document.querySelectorAll('.cfilter').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  let list = S.cast||[];
+  if (type==='in')   list = list.filter(c=>c.status==='in');
+  if (type==='soon') list = list.filter(c=>c.status!=='out');
+  if (type==='new')  list = list.filter(c=>c.rank==='NEW');
+  if (type==='rank') list = list.filter(c=>c.rank&&c.rank!=='NEW').sort((a,b)=>a.rank.localeCompare(b.rank));
+  document.getElementById('d-cast-grid').innerHTML = list.map(c=>gCard(c)).join('');
+}
+function renderCastGrid() { filterCast(document.querySelector('.cfilter.on'),'all'); }
+
+// SCHEDULE
+function renderSchedule() {
+  const el = document.getElementById('d-sched');
+  const cast = S.cast||[];
+  el.innerHTML = cast.map(c=>{
+    const sb = c.status==='in'?'sb-in':c.status==='soon'?'sb-soon':'sb-off';
+    const st = c.status==='in'?'出勤中':c.status==='soon'?'出勤予定':'本日休み';
+    return `<tr>
+      <td><div class="sn">${c.name} / ${c.roma}</div></td>
+      <td><span class="sp">${c.age}歳 / ${c.height}${c.bust?` / B${c.bust}`:''}</span></td>
+      <td><span class="stime">${c.time||'—'}</span></td>
+      <td><span class="sbadge ${sb}">${st}</span></td>
+      <td>${c.status!=='out'?`<a href="#" style="font-size:11px;color:var(--gold);">指名する</a>`:`<span style="color:var(--faint);font-size:11px;">—</span>`}</td>
+    </tr>`;
+  }).join('');
+}
+
+// PRICE
+function renderPrice() {
+  const cards  = document.getElementById('d-price-cards');
+  const tbl    = document.getElementById('d-price-tbl');
+  const extra  = document.getElementById('d-price-extra');
+  const optWrap= document.getElementById('d-options-wrap');
+  const optTbl = document.getElementById('d-options-tbl');
+  const prices = S.prices||[];
+
+  // プランカード（最初の2件）
+  if (cards) {
+    const planLabels = ['REGULAR PLAN','PREMIUM PLAN','STANDARD PLAN','LONG PLAN'];
+    cards.innerHTML = prices.slice(0,2).map((p,i)=>`
+      <div class="pcard">
+        <div class="pplan">${planLabels[i]||'PLAN'}</div>
+        <div class="pname">${p.name}コース</div>
+        <div class="pmain">${p.price}<small> / ${p.time}</small></div>
+        <div class="pnote">${p.note||''}</div>
+        <ul class="plist">
+          ${S.shimei?`<li>指名料: ${S.shimei}</li>`:''}
+          ${S.ench?`<li>延長: ${S.ench}</li>`:''}
+          ${S.nyukai?`<li>入会金: ${S.nyukai}</li>`:''}
+        </ul>
+      </div>`).join('');
+  }
+
+  // 全コース料金表
+  if (tbl) {
+    tbl.innerHTML = prices.map(p=>`<tr>
+      <td>${p.name}</td>
+      <td>${p.time}</td>
+      <td style="color:var(--gold);font-family:'Space Mono',monospace;">${p.price}</td>
+      <td>${p.note||''}</td>
+    </tr>`).join('') || '<tr><td colspan="4" style="color:var(--faint);font-size:12px;">料金情報がありません</td></tr>';
+  }
+
+  // 追加情報ボックス
+  if (extra) {
+    const boxes = [];
+    if (S.shimei)    boxes.push({label:'指名料',    val:S.shimei});
+    if (S.ench)      boxes.push({label:'延長料金',  val:S.ench});
+    if (S.nyukai)    boxes.push({label:'入会金',    val:S.nyukai});
+    if (S.kotsu)     boxes.push({label:'交通費',    val:S.kotsu});
+    if (S.priceNote) boxes.push({label:'備考',      val:S.priceNote});
+    extra.innerHTML = boxes.map(b=>`
+      <div class="price-info-box">
+        <div class="pib-label">${b.label}</div>
+        <div class="pib-value">${b.val}</div>
+      </div>`).join('');
+    extra.style.display = boxes.length ? 'grid' : 'none';
+  }
+
+  // オプション料金
+  if (optWrap && optTbl) {
+    const opts = S.options||[];
+    if (opts.length) {
+      optWrap.style.display = 'block';
+      optTbl.innerHTML = opts.map(o=>`<tr>
+        <td>${o.name}</td>
+        <td style="color:var(--gold);font-family:'Space Mono',monospace;">${o.price}</td>
+        <td>${o.note||''}</td>
+      </tr>`).join('');
+    } else {
+      optWrap.style.display = 'none';
+    }
+  }
+}
+
+// AREA（オブジェクト形式・文字列形式の両方に対応）
+function renderAreas() {
+  const el = document.getElementById('d-areas');
+  if (!el) return;
+  const raw = S.areas||[];
+  if (!raw.length) { el.innerHTML='<div style="color:var(--faint);font-size:12px;">エリア情報がありません</div>'; return; }
+
+  // オブジェクト形式かどうか判定
+  const isObj = raw.some(a=>typeof a==='object'&&a!==null);
+
+  if (isObj) {
+    // エリアカード表示（料金付き）
+    el.innerHTML = `<div class="area-grid-new">${
+      raw.map(a => {
+        const area = typeof a==='string'?{name:a,fee:'',note:''}:a;
+        const isFree = !area.fee || area.fee==='¥0'||area.fee==='0';
+        return `<div class="area-card">
+          <div class="area-card-name">${area.name}</div>
+          <div class="area-card-fee ${isFree?'fee-free':'fee-paid'}">${isFree?'✓ 交通費無料':'交通費 '+area.fee}</div>
+          ${area.note?`<div class="area-card-note">${area.note}</div>`:''}
+        </div>`;
+      }).join('')
+    }</div>`;
+  } else {
+    // 旧来の文字列形式
+    el.className = 'area-grid';
+    el.innerHTML = raw.map(a=>`<div class="area-item">${a}</div>`).join('');
+  }
+}
+
+// ACCESS
+function renderAccess() {
+  setText('d-addr',    S.addr);
+  setHTML('d-station', (S.station||'').replace(/\n/g,'<br>'));
+  setText('d-tel3',    S.tel);
+  setText('d-line',    S.line);
+  setText('d-open',    (S.open||'—')+' 〜 '+(S.close||'—')+'（年中無休）');
+}
+
+// FOOTER
+function renderFooter() {
+  setText('d-footer-logo', S.sitename);
+  setHTML('d-fdesc', (S.fdesc||'').replace(/\n/g,'<br>'));
+  setText('d-copy',  S.copy);
+}
+
+// ============================================================
+//  BOOT（スタンドアロン版）
+// ============================================================
+renderAll();
+</script>
+</body>
+</html>
