@@ -215,6 +215,154 @@ footer{background:var(--s1);border-top:1px solid var(--border);padding:38px clam
 .fcopy{font-family:'Space Mono',monospace;font-size:10px;color:var(--faint);}
 
 /* admin badge は非表示（セキュリティのため公開HPには表示しない） */
+
+/* =============================================
+   スマホ対応 — モバイルファースト対応CSS
+   ブレークポイント: 600px / 768px
+   ============================================= */
+
+/* ===== ハンバーガーメニューボタン ===== */
+#nav-hamburger{
+  display:none;
+  flex-direction:column;justify-content:center;align-items:center;
+  width:44px;height:52px;gap:5px;cursor:pointer;flex-shrink:0;
+  background:transparent;border:none;padding:0 14px;
+}
+#nav-hamburger span{
+  display:block;width:20px;height:1.5px;
+  background:var(--muted);border-radius:2px;
+  transition:all .3s;
+}
+#nav-hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+#nav-hamburger.open span:nth-child(2){opacity:0;}
+#nav-hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+
+/* ===== モバイルメニュードロワー ===== */
+#mobile-nav-drawer{
+  display:none;
+  position:fixed;top:52px;left:0;right:0;
+  background:rgba(9,6,10,.98);border-bottom:1px solid var(--border);
+  z-index:499;backdrop-filter:blur(20px);
+  flex-direction:column;
+  max-height:calc(100vh - 52px);overflow-y:auto;
+}
+#mobile-nav-drawer.open{display:flex;}
+#mobile-nav-drawer a{
+  display:flex;align-items:center;
+  padding:14px 20px;font-size:13px;color:var(--muted);
+  text-decoration:none;border-bottom:1px solid rgba(201,168,76,.06);
+  transition:all .2s;letter-spacing:.04em;
+}
+#mobile-nav-drawer a:hover{color:var(--gold);background:rgba(201,168,76,.04);}
+#mobile-nav-drawer .m-tel{
+  padding:16px 20px;border-bottom:1px solid rgba(201,168,76,.06);
+}
+#mobile-nav-drawer .m-tel .tl{
+  font-family:'Space Mono',monospace;font-size:9px;
+  color:var(--muted);letter-spacing:.1em;display:block;margin-bottom:4px;
+}
+#mobile-nav-drawer .m-tel .tn{
+  font-family:'Space Mono',monospace;font-size:18px;color:var(--gold);
+}
+#mobile-nav-drawer .m-rsv{
+  margin:14px 16px;padding:13px;text-align:center;
+  background:var(--gold);color:var(--deep);
+  font-size:13px;font-weight:500;letter-spacing:.08em;
+  text-decoration:none;border-radius:3px;
+}
+
+@media(max-width:768px){
+  /* ナビ：リンク列と右側を非表示→ハンバーガーに */
+  .gnav-links{ display:none !important; }
+  .gnav-r    { display:none !important; }
+  #nav-hamburger{ display:flex; }
+  .gnav-logo{ padding:0 16px; border-right:none; }
+  .gnav-in{ justify-content:space-between; }
+
+  /* ヒーロー */
+  .himg-wrap{ min-height:360px !important; }
+  .htxt{ left:20px; right:20px; max-width:100%; }
+  .htitle{ font-size:clamp(34px,9vw,52px) !important; }
+  .hcatch{ font-size:9px; letter-spacing:.18em; margin-bottom:8px; }
+  .hsub{ font-size:12px; max-width:100%; margin-bottom:18px; line-height:1.8; }
+  .hbtn{ padding:10px 20px; font-size:11px; }
+  .hover-ov{
+    background:linear-gradient(to bottom,
+      rgba(9,6,10,.2) 0%,
+      rgba(9,6,10,.65) 60%,
+      rgba(9,6,10,.85) 100%
+    ) !important;
+  }
+
+  /* インフォバー：縦並びに */
+  .ibar{
+    padding:10px 16px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  .ib{ flex-direction:column; align-items:flex-start; gap:3px; }
+
+  /* セクション余白を縮小 */
+  .sec{ padding:36px 16px; }
+
+  /* ニュース：日付を省略して見やすく */
+  .ni{ gap:8px; flex-wrap:wrap; }
+  .ni-date{ font-size:10px; }
+  .ni-title{ font-size:12px; width:100%; }
+
+  /* キャストカードスクロール */
+  .girls-scroll{ gap:10px; }
+  .gc{ width:150px; }
+
+  /* キャストグリッド：2列 */
+  .cast-grid{ grid-template-columns:repeat(2,1fr); gap:10px; }
+
+  /* フィルターボタン：小さく */
+  .cfilter{ font-size:9px; padding:4px 9px; }
+
+  /* スケジュールテーブル：簡略表示 */
+  .stbl{ min-width:0; width:100%; }
+  .stbl th:nth-child(2),
+  .stbl td:nth-child(2){ display:none; } /* スペック列を非表示 */
+  .stbl th{ font-size:9px; padding:8px 10px; }
+  .stbl td{ padding:10px; }
+  .sn{ font-size:13px; }
+  .stime{ font-size:11px; }
+
+  /* 料金テーブル：備考列を非表示 */
+  .ptbl th:last-child,
+  .ptbl td:last-child{ display:none; }
+
+  /* アクセス */
+  .acc-grid{ grid-template-columns:1fr; gap:20px; }
+
+  /* 求人バナー */
+  .rec-banner{ padding:24px 16px; flex-direction:column; text-align:center; }
+  .rec-text h3{ font-size:16px; }
+  .rec-text p{ font-size:12px; }
+  .rec-btn{ width:100%; text-align:center; padding:12px; }
+
+  /* フッター：2列→1列 */
+  .ft{
+    grid-template-columns:1fr !important;
+    gap:24px;
+  }
+  .fb2{ flex-direction:column; align-items:flex-start; gap:8px; }
+  .flegal{ gap:12px; }
+
+  /* エリアカード：2列 */
+  .area-grid-new{ grid-template-columns:repeat(2,1fr); gap:6px; }
+  .area-card{ padding:10px 12px; }
+}
+
+@media(max-width:400px){
+  /* 極小スマホ向け追加調整 */
+  .htitle{ font-size:32px !important; }
+  .cast-grid{ grid-template-columns:repeat(2,1fr); }
+  .gc{ width:calc(50vw - 22px); }
+  .ibar{ grid-template-columns:1fr; }
+}
 </style>
 </head>
 <body>
@@ -239,8 +387,28 @@ footer{background:var(--s1);border-top:1px solid var(--border);padding:38px clam
       </div>
       <a href="#" class="gnav-rsv" id="d-rsvbtn">今すぐ予約</a>
     </div>
+    <!-- ハンバーガーボタン（スマホのみ表示） -->
+    <button id="nav-hamburger" onclick="toggleMobileNav()" aria-label="メニュー">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- モバイルドロワーメニュー -->
+<div id="mobile-nav-drawer">
+  <div class="m-tel">
+    <span class="tl">お電話でのご予約</span>
+    <span class="tn" id="d-tel-mobile">—</span>
+  </div>
+  <a href="#new"     onclick="closeMobileNav()">🌟 新人紹介</a>
+  <a href="#cast"    onclick="closeMobileNav()">👑 在籍一覧</a>
+  <a href="#sched"   onclick="closeMobileNav()">📅 出勤情報</a>
+  <a href="#price"   onclick="closeMobileNav()">💰 料金案内</a>
+  <a href="#area"    onclick="closeMobileNav()">📍 対応エリア</a>
+  <a href="#access"  onclick="closeMobileNav()">🗺 アクセス</a>
+  <a href="#recruit" onclick="closeMobileNav()">💼 求人</a>
+  <a href="#" class="m-rsv" id="d-rsvbtn-mobile" onclick="closeMobileNav()">今すぐ予約する</a>
+</div>
 
 <!-- SUB NAV -->
 <div id="snav">
@@ -483,6 +651,11 @@ function renderMeta() {
   setHTML('d-fdesc',     (S.fdesc||'').replace(/\n/g,'<br>'));
   const rb = document.getElementById('d-rsvbtn');
   if (rb) rb.textContent = S.rsvtxt||'今すぐ予約';
+  // モバイルナビにも反映
+  const rbm = document.getElementById('d-rsvbtn-mobile');
+  if (rbm) rbm.textContent = S.ctabtn||'今すぐ予約する';
+  const telM = document.getElementById('d-tel-mobile');
+  if (telM) telM.textContent = S.tel||'—';
   // Area short（オブジェクト形式・文字列形式の両方に対応）
   const areas = (S.areas||[]).map(a=>typeof a==='string'?a:a.name);
   setText('d-area-short', areas.slice(0,3).join('・') + (areas.length>3?'など':''));
@@ -721,6 +894,28 @@ function renderFooter() {
 // ============================================================
 //  BOOT（スタンドアロン版）
 // ============================================================
+
+// モバイルナビ開閉
+function toggleMobileNav() {
+  const btn    = document.getElementById('nav-hamburger');
+  const drawer = document.getElementById('mobile-nav-drawer');
+  const isOpen = drawer.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+}
+function closeMobileNav() {
+  document.getElementById('nav-hamburger').classList.remove('open');
+  document.getElementById('mobile-nav-drawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+// ナビ外タップで閉じる
+document.addEventListener('click', e => {
+  const drawer = document.getElementById('mobile-nav-drawer');
+  if (!drawer.classList.contains('open')) return;
+  if (!document.getElementById('gnav').contains(e.target) &&
+      !drawer.contains(e.target)) closeMobileNav();
+});
+
 renderAll();
 </script>
 </body>
