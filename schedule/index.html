@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>本日の出勤スケジュール | Luxe Night</title>
+<meta name="description" content="本日出勤予定のキャスト一覧です。">
+<meta property="og:title" content="本日の出勤スケジュール | Luxe Night">
+<meta property="og:description" content="本日出勤予定のキャスト一覧です。">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://tenpsama-stack.github.io/luxe-demo/schedule/">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400&family=Noto+Sans+JP:wght@200;300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+
+:root{--gold:#c9a84c;--gold-l:#e8d08a;--gold-d:#8b6914;--deep:#09060a;--s1:#120e14;--s2:#1c1620;--s3:#28202e;--text:#f0e8f0;--muted:#8a7a90;--faint:#5a4f62;--accent:#c04870;--ok:#4ab870;--warn:#e8a030;--border:rgba(201,168,76,.18);--border2:rgba(201,168,76,.38);}
+body.th-rose{--gold:#e09aae;--accent:#d05878;}body.th-neo{--gold:#5fd4ff;--accent:#ff60a0;}body.th-gold{--gold:#e8c060;--deep:#06040a;--s1:#0e0c00;}body.th-white{--deep:#f8f4f0;--s1:#f0ebe6;--s2:#e8e2dc;--s3:#ddd6ce;--text:#1a1016;--muted:#6a5a60;}body.th-sakura{--gold:#ffb7c5;--accent:#ff6e8a;}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--deep);color:var(--text);font-size:14px;line-height:1.7;}
+#pnav{position:sticky;top:0;z-index:500;background:rgba(9,6,10,.97);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);}
+.pnav-in{display:flex;align-items:center;height:52px;padding:0 20px;gap:14px;}
+.pnav-logo{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;color:var(--gold);text-decoration:none;font-size:20px;}
+.pnav-sep{width:1px;height:18px;background:var(--border);}
+.pnav-title{font-size:12px;color:var(--muted);letter-spacing:.06em;}
+.pnav-back{margin-left:auto;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:5px 12px;transition:all .2s;}
+.pnav-back:hover{color:var(--gold);border-color:var(--gold);}
+.pnav-rsv{padding:0 18px;height:52px;background:var(--gold);color:var(--deep);font-size:12px;font-weight:500;text-decoration:none;display:flex;align-items:center;}
+.sec{padding:48px clamp(18px,4vw,48px);}
+.sec-alt{background:var(--s1);}
+.sch{display:flex;align-items:baseline;gap:14px;margin-bottom:28px;padding-bottom:13px;border-bottom:1px solid var(--border);}
+.sch-ja{font-size:20px;font-weight:400;color:var(--text);letter-spacing:.06em;}
+.sch-en{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.3em;color:var(--gold);}
+.gc{width:180px;flex-shrink:0;cursor:pointer;}
+.gphoto{aspect-ratio:2/3;background:var(--s2);border:1px solid var(--border);overflow:hidden;position:relative;transition:border-color .3s;}
+.gph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,var(--s2),var(--s3));}
+.gph span{font-family:'Space Mono',monospace;font-size:10px;color:var(--faint);}
+.gphoto img{width:100%;height:100%;object-fit:cover;}
+.gbadge{position:absolute;top:7px;left:7px;font-family:'Space Mono',monospace;font-size:9px;padding:2px 6px;}
+.bn{background:var(--accent);color:#fff;}.br{background:rgba(201,168,76,.88);color:var(--deep);}
+.gmeta{padding:9px 3px;}
+.gname{font-size:14px;color:var(--text);letter-spacing:.06em;margin-bottom:2px;}
+.gage{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
+.gtags{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;}
+.gtag{font-size:10px;color:var(--muted);border:1px solid var(--border);padding:1px 5px;}
+.gst{font-family:'Space Mono',monospace;font-size:10px;margin-top:5px;}
+.s-in{color:var(--ok);}.s-soon{color:var(--warn);}.s-out{color:var(--faint);}
+.cast-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;}
+.stbl-wrap{overflow-x:auto;}
+.stbl{width:100%;border-collapse:collapse;min-width:480px;}
+.stbl th{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--gold);padding:9px 13px;text-align:left;border-bottom:1px solid var(--border);background:var(--s2);}
+.stbl td{padding:12px 13px;border-bottom:1px solid rgba(201,168,76,.05);}
+.sbadge{display:inline-block;font-family:'Space Mono',monospace;font-size:10px;padding:2px 8px;border-radius:2px;}
+.sb-in{background:rgba(74,184,112,.12);color:var(--ok);border:1px solid rgba(74,184,112,.3);}
+.sb-soon{background:rgba(232,160,48,.1);color:var(--warn);border:1px solid rgba(232,160,48,.25);}
+.sb-off{background:var(--s2);color:var(--faint);border:1px solid var(--border);}
+.price-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;}
+.pcard{background:var(--s1);border:1px solid var(--border);padding:24px;}
+.pplan{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.28em;color:var(--gold);margin-bottom:6px;}
+.pname{font-size:16px;color:var(--text);margin-bottom:12px;}
+.pmain{font-family:'Space Mono',monospace;font-size:22px;color:var(--gold);margin-bottom:3px;}
+.pmain small{font-size:12px;color:var(--muted);}
+.pnote2{font-size:11px;color:var(--muted);margin-bottom:16px;line-height:1.8;}
+.plist{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.plist li{font-size:12px;color:var(--muted);padding-left:14px;position:relative;}
+.plist li::before{content:'—';position:absolute;left:0;color:var(--gold-d);}
+.ptbl{width:100%;border-collapse:collapse;}
+.ptbl th,.ptbl td{padding:9px 13px;text-align:left;border:1px solid rgba(201,168,76,.09);font-size:12px;}
+.ptbl th{font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);background:var(--s2);}
+.ptbl td{color:var(--muted);}
+.area-grid-new{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;}
+.area-card{background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:12px 14px;}
+.area-card-name{font-size:13px;color:var(--text);margin-bottom:4px;}
+.area-card-fee{font-family:'Space Mono',monospace;font-size:11px;}
+.fee-free{color:var(--ok);}.fee-paid{color:var(--gold);}
+.area-card-note{font-size:10px;color:var(--muted);margin-top:3px;}
+.acc-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start;}
+.acc-map{background:var(--s2);border:1px solid var(--border);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.maplines{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(201,168,76,.04) 39px,rgba(201,168,76,.04) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(201,168,76,.04) 39px,rgba(201,168,76,.04) 40px);}
+.mappin{position:relative;z-index:1;text-align:center;}
+.mapd{width:11px;height:11px;border-radius:50%;background:var(--gold);margin:0 auto 5px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 8px rgba(201,168,76,.4)}50%{box-shadow:0 0 22px rgba(201,168,76,.7)}}
+.mapl{font-family:'Space Mono',monospace;font-size:10px;color:var(--gold);letter-spacing:.15em;}
+.acc-dl dt{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--gold);margin-top:18px;margin-bottom:5px;}
+.acc-dl dd{font-size:13px;color:var(--muted);line-height:1.9;}
+.rec-banner{background:linear-gradient(135deg,var(--s2),var(--s3));border:1px solid var(--border);padding:38px;display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;}
+.rec-text h3{font-size:19px;font-weight:400;color:var(--text);margin-bottom:7px;}
+.rec-text p{font-size:13px;color:var(--muted);line-height:1.9;}
+.rec-btn{background:var(--accent);color:#fff;padding:13px 34px;font-size:13px;text-decoration:none;}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:24px;}
+.info-box{background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:14px 16px;}
+.info-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--gold);margin-bottom:5px;}
+.info-val{font-size:13px;color:var(--text);}
+.portal-btn{display:inline-flex;align-items:center;gap:8px;margin-top:24px;padding:14px 28px;background:var(--accent);color:#fff;font-size:13px;text-decoration:none;letter-spacing:.06em;}
+.back-nav{padding:24px clamp(18px,4vw,48px);border-top:1px solid var(--border);background:var(--s1);}
+.back-nav a{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:7px 16px;transition:all .2s;}
+.back-nav a:hover{color:var(--gold);border-color:var(--gold);}
+footer{background:var(--s1);border-top:1px solid var(--border);padding:24px clamp(18px,4vw,48px);}
+.ft2{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.fcopy{font-family:'Space Mono',monospace;font-size:10px;color:var(--faint);}
+.flinks{display:flex;gap:18px;flex-wrap:wrap;}
+.flinks a{font-size:11px;color:var(--faint);text-decoration:none;}
+@media(max-width:768px){
+  .acc-grid{grid-template-columns:1fr;}
+  .cast-grid{grid-template-columns:repeat(2,1fr);}
+  .gc{width:calc(50vw - 24px);}
+  .sec{padding:32px 16px;}
+  .stbl{min-width:0;}
+  .stbl td:nth-child(2){display:none;}
+}
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="pnav">
+  <div class="pnav-in">
+    <a href="../" class="pnav-logo">Luxe Night</a>
+    <div class="pnav-sep"></div>
+    <span class="pnav-title">出勤スケジュール</span>
+    <a href="../" class="pnav-back">← TOPへ戻る</a>
+    <a href="#" class="pnav-rsv" id="d-rsv">{}</a>
+  </div>
+</nav>
+
+<!-- CONTENT -->
+<section class="sec">
+  <div class="sch">
+    <span class="sch-ja">出勤スケジュール</span>
+    <span class="sch-en">TODAY'S SCHEDULE</span>
+  </div>
+  <div id="page-content"></div>
+
+  <!-- ポータルサイトボタン（設定されている場合のみ表示） -->
+  <div id="portal-btn-wrap"></div>
+</section>
+
+<!-- 戻りナビ -->
+<nav class="back-nav">
+  <a href="../">← Luxe Night トップページへ</a>
+  <a href="../#cast" style="margin-left:12px;">在籍一覧を見る →</a>
+</nav>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft2">
+    <div class="flinks">
+      <a href="../">TOPへ戻る</a>
+      <a href="../#price">料金案内</a>
+      <a href="../#area">対応エリア</a>
+      <a href="../#access">アクセス</a>
+    </div>
+    <div class="fcopy" id="d-copy"></div>
+  </div>
+</footer>
+
+<script>
+
+const S = {
+  theme:'noir', sitename:'Luxe Night', tel:'03-XXXX-XXXX', line:'@luxenight_ginza',
+  open:'12:00', close:'翌5:00', addr:'東京都新宿区○○1-2-3 ○○ビル3F',
+  station:'JR「新宿」駅 東口より徒歩5分', ctabtn:'今すぐ予約する',
+  shimei:'¥2,000〜', ench:'¥8,000 / 30分', nyukai:'¥3,000（初回のみ）',
+  kotsu:'実費（エリアによる）', priceNote:'お支払いは現金のみ',
+  options:[
+    {id:1,name:'コスプレ',price:'¥3,000',note:'衣装持込'},
+    {id:2,name:'ローション',price:'¥2,000',note:''},
+    {id:3,name:'3P（追加1名）',price:'¥10,000',note:'要相談'},
+  ],
+  areas:[
+    {name:'新宿区',fee:'¥0',note:'交通費込'},{name:'渋谷区',fee:'¥0',note:'交通費込'},
+    {name:'港区',fee:'¥0',note:'交通費込'},{name:'中央区',fee:'¥0',note:'交通費込'},
+    {name:'千代田区',fee:'¥0',note:'交通費込'},{name:'品川区',fee:'¥500',note:''},
+    {name:'目黒区',fee:'¥500',note:''},{name:'豊島区',fee:'¥500',note:''},
+    {name:'横浜市',fee:'¥1,500',note:'一部エリア対応不可'},{name:'川崎市',fee:'¥1,000',note:''},
+  ],
+  cast:[
+    {id:1,name:'明日香',roma:'Asuka',age:25,height:'T165',blood:'A',tags:['スレンダー','No.1'],rank:'★1',status:'in',time:'19:00 — Last',photo:'',message:'一緒に素敵な時間を過ごしましょう♪'},
+    {id:2,name:'凛',roma:'Rin',age:22,height:'T158',blood:'O',tags:['清楚系','天然'],rank:'NEW',status:'in',time:'17:00 — 01:00',photo:'',message:''},
+    {id:3,name:'遥',roma:'Haruka',age:23,height:'T162',blood:'B',tags:['癒し系','グラマー'],rank:'★2',status:'soon',time:'22:00 — Last',photo:'',message:''},
+    {id:4,name:'雪',roma:'Yuki',age:20,height:'T163',blood:'AB',tags:['天然','色白'],rank:'NEW',status:'soon',time:'20:00 — 03:00',photo:'',message:''},
+    {id:5,name:'さくら',roma:'Sakura',age:24,height:'T160',blood:'O',tags:['モデル系','グラマー'],rank:'★3',status:'in',time:'20:00 — Last',photo:'',message:''},
+  ],
+  prices:[
+    {name:'レギュラー',time:'60分',price:'¥20,000',note:'入会金・交通費込'},
+    {name:'ロング',time:'90分',price:'¥27,000',note:'入会金・交通費込'},
+    {name:'プレミアム',time:'120分',price:'¥36,000',note:'入会金・交通費込'},
+    {name:'延長',time:'30分',price:'¥8,000',note:'現地にてご相談'},
+  ],
+  portalUrls:{},
+};
+
+
+function gCard(c) {
+  const badge = c.rank ? `<span class="gbadge ${c.rank==='NEW'?'bn':'br'}">${c.rank}</span>` : '';
+  const photo = c.photo ? `<img src="${c.photo}">` : `<div class="gph"><span>PHOTO</span></div>`;
+  const st = c.status==='in'?'s-in':c.status==='soon'?'s-soon':'s-out';
+  const stxt = c.status==='in'?'● 出勤中':c.status==='soon'?'◉ 出勤予定':'○ 本日休み';
+  return `<div class="gc">
+    <div class="gphoto">${photo}${badge}</div>
+    <div class="gmeta">
+      <div class="gname">${c.name} / ${c.roma}</div>
+      <div class="gage">${c.age}歳 · ${c.height}${c.blood?' · '+c.blood+'型':''}</div>
+      <div class="gtags">${(c.tags||[]).map(t=>`<span class="gtag">${t}</span>`).join('')}</div>
+      <div class="gst ${st}">${stxt}</div>
+    </div>
+  </div>`;
+}
+
+function renderNewCast() {
+  const el = document.getElementById('page-content');
+  const list = S.cast.filter(c=>c.rank==='NEW'||c.status!=='out');
+  if (!list.length) { el.innerHTML='<p style="color:var(--muted);">本日の新人情報はありません</p>'; return; }
+  el.innerHTML = `<div class="cast-grid">${list.map(c=>gCard(c)).join('')}</div>`;
+}
+
+function renderRanking() {
+  const el = document.getElementById('page-content');
+  const ranked = S.cast.filter(c=>c.rank&&c.rank!=='NEW').sort((a,b)=>a.rank.localeCompare(b.rank));
+  const others = S.cast.filter(c=>!c.rank||c.rank==='NEW');
+  const all = [...ranked, ...others];
+  el.innerHTML = `<div class="cast-grid">${all.map((c,i)=>{
+    let medal = '';
+    if(i===0) medal='<span style="position:absolute;top:7px;right:7px;font-size:18px;">🥇</span>';
+    if(i===1) medal='<span style="position:absolute;top:7px;right:7px;font-size:18px;">🥈</span>';
+    if(i===2) medal='<span style="position:absolute;top:7px;right:7px;font-size:18px;">🥉</span>';
+    return gCard(c).replace('<div class="gphoto">', `<div class="gphoto" style="position:relative;">${medal}`).replace(`>${medal}`, `>${medal}`);
+  }).join('')}</div>`;
+}
+
+function renderSchedule() {
+  const el = document.getElementById('page-content');
+  el.innerHTML = `<div class="stbl-wrap"><table class="stbl">
+    <thead><tr><th>CAST</th><th>スペック</th><th>出勤時間</th><th>STATUS</th><th>指名</th></tr></thead>
+    <tbody>${S.cast.map(c=>{
+      const sb = c.status==='in'?'sb-in':c.status==='soon'?'sb-soon':'sb-off';
+      const st = c.status==='in'?'出勤中':c.status==='soon'?'出勤予定':'本日休み';
+      return `<tr>
+        <td><b style="color:var(--text);">${c.name}</b> <span style="color:var(--muted);font-size:12px;">/ ${c.roma}</span></td>
+        <td style="color:var(--muted);font-size:12px;">${c.age}歳 / ${c.height}</td>
+        <td style="font-family:Space Mono,monospace;font-size:12px;color:var(--muted);">${c.time||'—'}</td>
+        <td><span class="sbadge ${sb}">${st}</span></td>
+        <td>${c.status!=='out'?`<a href="#" style="font-size:11px;color:var(--gold);">指名する</a>`:'<span style="color:var(--faint);font-size:11px;">—</span>'}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+}
+
+function renderPrice() {
+  const el = document.getElementById('page-content');
+  const planLabels = ['REGULAR PLAN','PREMIUM PLAN','STANDARD PLAN','LONG PLAN'];
+  let html = `<div class="price-grid">${S.prices.slice(0,2).map((p,i)=>`
+    <div class="pcard">
+      <div class="pplan">${planLabels[i]||'PLAN'}</div>
+      <div class="pname">${p.name}コース</div>
+      <div class="pmain">${p.price}<small> / ${p.time}</small></div>
+      <div class="pnote2">${p.note}</div>
+      <ul class="plist">
+        ${S.shimei?`<li>指名料: ${S.shimei}</li>`:''}
+        ${S.ench?`<li>延長: ${S.ench}</li>`:''}
+        ${S.nyukai?`<li>入会金: ${S.nyukai}</li>`:''}
+      </ul>
+    </div>`).join('')}</div>
+  <table class="ptbl" style="margin-top:22px;">
+    <thead><tr><th>コース</th><th>時間</th><th>料金</th><th>備考</th></tr></thead>
+    <tbody>${S.prices.map(p=>`<tr><td>${p.name}</td><td>${p.time}</td><td style="color:var(--gold);font-family:Space Mono,monospace;">${p.price}</td><td>${p.note}</td></tr>`).join('')}</tbody>
+  </table>`;
+  if (S.options?.length) {
+    html += `<h3 style="font-family:Space Mono,monospace;font-size:11px;letter-spacing:.2em;color:var(--gold);margin:28px 0 14px;">OPTIONS</h3>
+    <table class="ptbl">
+      <thead><tr><th>オプション</th><th>料金</th><th>備考</th></tr></thead>
+      <tbody>${S.options.map(o=>`<tr><td>${o.name}</td><td style="color:var(--gold);font-family:Space Mono,monospace;">${o.price}</td><td>${o.note||''}</td></tr>`).join('')}</tbody>
+    </table>`;
+  }
+  el.innerHTML = html;
+}
+
+function renderArea() {
+  const el = document.getElementById('page-content');
+  el.innerHTML = `<div class="area-grid-new">${S.areas.map(a=>{
+    const isFree = !a.fee||a.fee==='¥0'||a.fee==='0';
+    return `<div class="area-card">
+      <div class="area-card-name">${a.name}</div>
+      <div class="area-card-fee ${isFree?'fee-free':'fee-paid'}">${isFree?'✓ 交通費無料':'交通費 '+a.fee}</div>
+      ${a.note?`<div class="area-card-note">${a.note}</div>`:''}
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderAccess() {
+  const el = document.getElementById('page-content');
+  el.innerHTML = `<div class="acc-grid">
+    <div class="acc-map">
+      <div class="maplines"></div>
+      <div class="mappin">
+        <div class="mapd"></div>
+        <div class="mapl">${S.sitename.toUpperCase()}</div>
+      </div>
+    </div>
+    <dl class="acc-dl">
+      <dt>TEL</dt><dd>${S.tel}</dd>
+      <dt>LINE</dt><dd>${S.line}</dd>
+      <dt>OFFICE</dt><dd>${S.addr}</dd>
+      <dt>STATION</dt><dd>${S.station.replace(/\n/g,'<br>')}</dd>
+      <dt>OPEN</dt><dd>${S.open} 〜 ${S.close}（年中無休）</dd>
+    </dl>
+  </div>`;
+}
+
+function renderRecruit() {
+  const el = document.getElementById('page-content');
+  el.innerHTML = `
+    <div class="rec-banner">
+      <div class="rec-text">
+        <h3>女性スタッフ募集中</h3>
+        <p>未経験者大歓迎。あなたのペースで始められます。<br>日払い・週払い対応。充実したサポート体制で安心してスタートできます。</p>
+      </div>
+      <a href="tel:${S.tel}" class="rec-btn">📞 今すぐ電話で応募</a>
+    </div>
+    <div class="info-grid" style="margin-top:24px;">
+      <div class="info-box"><div class="info-label">給与</div><div class="info-val">日払い・週払い対応</div></div>
+      <div class="info-box"><div class="info-label">勤務時間</div><div class="info-val">${S.open} 〜 ${S.close}</div></div>
+      <div class="info-box"><div class="info-label">勤務地</div><div class="info-val">${S.addr}</div></div>
+      <div class="info-box"><div class="info-label">応募資格</div><div class="info-val">18歳以上（高校生不可）</div></div>
+    </div>`;
+}
+
+
+// ページ初期化
+function init() {
+  // テーマ
+  if (S.theme && S.theme !== 'noir') document.body.className = 'th-' + S.theme;
+  // タイトル・メタ
+  document.title = '本日の出勤スケジュール | ' + S.sitename;
+  const rsv = document.getElementById('d-rsv');
+  if (rsv) rsv.textContent = S.ctabtn || '今すぐ予約';
+  const copy = document.getElementById('d-copy');
+  if (copy) copy.textContent = S.copy || '© 2025 LUXE NIGHT.';
+
+  // ポータルURLボタン
+  const pageId = 'schedule';
+  const pageData = (S.pages||[]).find(p=>p.id===pageId);
+  if (pageData?.portalUrl) {
+    const wrap = document.getElementById('portal-btn-wrap');
+    if (wrap) wrap.innerHTML = `<a href="${pageData.portalUrl}" target="_blank" class="portal-btn">🔗 ${pageData.portalLabel||'ポータルサイトで見る'}</a>`;
+  }
+
+  // コンテンツ描画
+  renderSchedule();
+}
+
+// LocalStorageにデータがあれば上書き（管理画面と同じPCで使う場合）
+try {
+  const raw = localStorage.getItem('luxe_site_data');
+  if (raw) Object.assign(S, JSON.parse(raw));
+} catch(e) {}
+
+init();
+</script>
+</body>
+</html>
