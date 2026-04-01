@@ -124,7 +124,9 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--deep);color:var(--te
 .ni-title{font-size:13px;color:var(--muted);transition:color .2s;line-height:1.5;}
 
 /* ===== CAST CARD ===== */
+/* GIRLS SCROLL */
 .girls-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.girls-scroll .gc{width:180px;flex-shrink:0;}/* デスクトップで固定幅 */
 .cast-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
 .gc{cursor:pointer;transition:all .2s;}
 .gc:hover .gphoto,.gc:active .gphoto{border-color:var(--gold);}
@@ -134,7 +136,9 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--deep);color:var(--te
 .gph span{font-family:'Space Mono',monospace;font-size:10px;color:var(--faint);}
 .gbadge{position:absolute;top:7px;left:7px;font-family:'Space Mono',monospace;font-size:9px;padding:2px 7px;}
 .bn{background:var(--accent);color:#fff;}.br{background:rgba(201,168,76,.88);color:var(--deep);}
-.gc-tap{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(9,6,10,.75));padding:18px 8px 6px;text-align:center;font-family:'Space Mono',monospace;font-size:9px;color:rgba(201,168,76,.8);letter-spacing:.1em;}
+/* TAP表示：PC=ホバー時のみ / スマホ=非表示（直感的にタップできるので不要） */
+.gc-tap{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(9,6,10,.82));padding:22px 8px 8px;text-align:center;font-family:'Space Mono',monospace;font-size:9px;color:rgba(201,168,76,.9);letter-spacing:.12em;opacity:0;transition:opacity .25s;}
+.gc:hover .gc-tap{opacity:1;}
 .gmeta{padding:7px 2px;}
 .gname{font-size:13px;color:var(--text);font-weight:400;letter-spacing:.06em;margin-bottom:2px;}
 .gage{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);}
@@ -287,6 +291,9 @@ footer{background:var(--s1);border-top:1px solid var(--border);padding:38px clam
   body{padding-bottom:52px;}
   #scroll-top{bottom:62px;}
 
+  /* スマホはTAPを非表示 */
+  .gc-tap{display:none !important;}
+
   .himg-wrap{min-height:370px !important;}
   .htxt{left:16px;right:72px;max-width:100%;}
   .htitle{font-size:clamp(28px,8vw,44px) !important;}
@@ -305,7 +312,7 @@ footer{background:var(--s1);border-top:1px solid var(--border);padding:38px clam
   .ni-date{font-size:10px;}
   .ni-title{font-size:12px;flex:1 1 100%;margin-top:2px;}
 
-  .girls-scroll .gc{width:132px;flex-shrink:0;}
+  .girls-scroll .gc{width:140px;flex-shrink:0;}
   .cast-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
   .cast-grid .gname{font-size:12px;}
   .cfilter{font-size:9px;padding:5px 10px;}
@@ -644,13 +651,35 @@ let curSlide=0,slideCount=0,currentPage='home';
 // ============================================================
 //  SPA ナビゲーション
 // ============================================================
+// ページURLマッピング（SEO対応サブページ）
+const PAGE_URLS = {
+  'newcast':  'newcast/',
+  'cast':     'ranking/',
+  'sched':    'schedule/',
+  'price':    'price/',
+  'area':     'area/',
+  'access':   'access/',
+  'recruit':  'recruit/',
+};
+
 function navTo(page) {
+  // サブページURLが存在する場合はそちらに遷移（SEO対応）
+  if (PAGE_URLS[page]) {
+    const base = location.href.replace(/\/[^\/]*$/, '/').replace(/\/$/, '/');
+    // すでにサブページにいる場合はSPA遷移
+    const isSubPage = location.pathname.split('/').filter(Boolean).pop();
+    if (!isSubPage || isSubPage === 'index.html' || location.pathname.endsWith('/luxe-demo/')) {
+      location.href = PAGE_URLS[page];
+      return;
+    }
+  }
+
+  // SPA内遷移（TOPページ内）
   document.querySelectorAll('.spa-page').forEach(p=>p.classList.remove('active'));
   const el = document.getElementById('page-'+page);
   if (el) el.classList.add('active');
   currentPage = page;
 
-  // ナビ強調
   document.querySelectorAll('.gnav-links a').forEach(a=>a.classList.remove('active'));
   document.querySelectorAll('.sna').forEach(a=>a.classList.remove('active'));
   document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
