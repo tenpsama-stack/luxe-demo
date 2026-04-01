@@ -315,6 +315,7 @@ textarea.fi{resize:vertical;min-height:72px;}
   <div class="sb-item" onclick="goto('images',this)"><span class="sb-icon">🖼</span><span class="sb-label">画像管理</span></div>
   <div class="sb-divider"></div>
   <div class="sb-section">システム</div>
+  <div class="sb-item" onclick="goto('pages',this)"><span class="sb-icon">🔗</span><span class="sb-label">ページ管理</span></div>
   <div class="sb-item" onclick="goto('settings',this)"><span class="sb-icon">⚙️</span><span class="sb-label">設定</span></div>
   <div class="sb-bottom">
     <a href="site.html" target="_blank" class="sb-preview-btn">🔗 公開HPを確認</a>
@@ -623,6 +624,25 @@ textarea.fi{resize:vertical;min-height:72px;}
     </div>
   </div>
 
+  <!-- PAGE MANAGEMENT -->
+  <div class="page" id="page-pages">
+    <div class="page-title">ページ管理</div>
+    <div class="page-desc">各ページのSEO設定・ポータルサイトへの遷移URLを管理します</div>
+
+    <!-- URL構成ガイド -->
+    <div class="card">
+      <div class="card-head"><div class="card-title">📋 URL構成</div></div>
+      <div class="card-body">
+        <div style="font-size:11px;color:var(--muted);line-height:2;font-family:'Space Mono',monospace;" id="url-guide-text">
+          読み込み中...
+        </div>
+      </div>
+    </div>
+
+    <!-- ページ一覧 -->
+    <div id="pages-list"></div>
+  </div>
+
   <!-- SETTINGS -->
   <div class="page" id="page-settings">
     <div class="page-title">設定</div>
@@ -925,6 +945,16 @@ const DEFAULTS = {
   heroImages:[{name:'HERO SLIDE 1',size:'1920×1080',url:''}],
   shiftData:{},
   savedAt: null,
+  // ページ管理（SEO・ポータルサイト遷移URL）
+  pages:[
+    {id:'newcast',  label:'新人紹介',         path:'newcast',  seoTitle:'新人キャスト紹介',    seoDesc:'最新デビューのキャストをご紹介します。',       portalUrl:'', portalLabel:'ポータルサイトで見る'},
+    {id:'ranking',  label:'ランキング',        path:'ranking',  seoTitle:'人気キャストランキング',seoDesc:'お客様に人気のキャストランキングをご紹介。',     portalUrl:'', portalLabel:'ポータルサイトで見る'},
+    {id:'schedule', label:'出勤スケジュール',  path:'schedule', seoTitle:'本日の出勤スケジュール',seoDesc:'本日出勤予定のキャスト一覧です。',               portalUrl:'', portalLabel:''},
+    {id:'price',    label:'料金案内',          path:'price',    seoTitle:'料金システム・コース案内',seoDesc:'各種コースの料金をご案内します。',             portalUrl:'', portalLabel:''},
+    {id:'area',     label:'対応エリア',        path:'area',     seoTitle:'対応エリア・交通費',    seoDesc:'対応エリアと交通費についてご案内します。',       portalUrl:'', portalLabel:''},
+    {id:'access',   label:'アクセス',          path:'access',   seoTitle:'アクセス・連絡先',      seoDesc:'お電話・LINEでのご予約はこちらから。',           portalUrl:'', portalLabel:''},
+    {id:'recruit',  label:'求人情報',          path:'recruit',  seoTitle:'高収入求人募集中',      seoDesc:'未経験者大歓迎。日払い・週払い対応の求人情報。', portalUrl:'', portalLabel:''},
+  ],
 };
 
 // ============================================================
@@ -1183,6 +1213,7 @@ function goto(page, el) {
   if (page==='images')     renderImgSlots();
   if (page==='info')       fillInfoForm();
   if (page==='settings')   onSettingsOpen();
+  if (page==='pages')      renderPages();
 }
 
 // ============================================================
@@ -2071,6 +2102,77 @@ function clearFailLog() {
   localStorage.removeItem(FAK);
   renderFailLog();
   toast('🗑 ログを消去しました');
+}
+
+// ============================================================
+//  PAGES MANAGEMENT
+// ============================================================
+function renderPages() {
+  if (!S.pages) S.pages = [];
+
+  // URL構成ガイド
+  const base = location.origin;
+  const guide = document.getElementById('url-guide-text');
+  if (guide) {
+    guide.innerHTML = (S.pages||[]).map(p =>
+      `<span style="color:var(--gold);">${base}/${p.path}/</span>　← ${p.label}<br>`
+    ).join('');
+  }
+
+  // ページ一覧
+  const el = document.getElementById('pages-list');
+  if (!el) return;
+
+  el.innerHTML = (S.pages||[]).map((p,i) => `
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-head">
+        <div class="card-title">🔗 ${p.label}</div>
+        <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);">/${p.path}/</span>
+      </div>
+      <div class="card-body">
+        <div class="frow">
+          <div class="field">
+            <div class="field-label">SEOタイトル <span class="badge">titleタグ</span></div>
+            <input class="fi" id="pg-title-${i}" value="${escPageVal(p.seoTitle)}" placeholder="ページタイトル">
+          </div>
+          <div class="field">
+            <div class="field-label">SEO説明文 <span class="badge">descriptionタグ</span></div>
+            <input class="fi" id="pg-desc-${i}" value="${escPageVal(p.seoDesc)}" placeholder="ページの説明（120字程度）">
+          </div>
+        </div>
+        <hr class="sec-divider">
+        <div class="sec-title">ポータルサイト遷移URL <span class="badge">空欄で非表示</span></div>
+        <div class="frow">
+          <div class="field">
+            <div class="field-label">遷移先URL</div>
+            <input class="fi mono" id="pg-purl-${i}" value="${escPageVal(p.portalUrl)}" placeholder="https://portal-site.jp/shop/xxxx">
+          </div>
+          <div class="field">
+            <div class="field-label">ボタンテキスト</div>
+            <input class="fi" id="pg-plbl-${i}" value="${escPageVal(p.portalLabel)}" placeholder="ポータルサイトで予約">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+          <button class="fbtn gold" onclick="savePage(${i})">保存</button>
+          ${p.portalUrl ? `<a href="${escPageVal(p.portalUrl)}" target="_blank" class="fbtn outline">🔗 URLを確認</a>` : ''}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function escPageVal(v) {
+  return (v||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function savePage(i) {
+  if (!S.pages?.[i]) return;
+  S.pages[i].seoTitle   = document.getElementById('pg-title-' +i)?.value.trim()||'';
+  S.pages[i].seoDesc    = document.getElementById('pg-desc-'  +i)?.value.trim()||'';
+  S.pages[i].portalUrl  = document.getElementById('pg-purl-'  +i)?.value.trim()||'';
+  S.pages[i].portalLabel= document.getElementById('pg-plbl-'  +i)?.value.trim()||'';
+  save(true);
+  renderPages();
+  toast(`🔗 ${S.pages[i].label} を保存しました`);
 }
 
 // settingsページを開いたときに通知UIを同期
